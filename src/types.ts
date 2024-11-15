@@ -138,9 +138,9 @@ export const mockMembers: Member[] = [
     id: 'd1',
     name: 'Vivek Wagdare',
     role: 'DevOps Engineer',
-    avatar: 'https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?w=400',
+    avatar: 'https://avatars.githubusercontent.com/u/92390419?v=4',
     github: 'vivek-wagdare',
-    devCoins: 0,
+    devCoins: 200,
     contributions: [],
   },
   {

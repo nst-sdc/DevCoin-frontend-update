@@ -38,7 +38,7 @@ export default function MembersPage() {
               <option value="all">All Roles</option>
               <option value="frontend">Frontend</option>
               <option value="backend">Backend</option>
-              <option value="fullstack">Full Stack</option>
+              <option value="fullstack">DevOps</option>
             </select>
           </div>
         </div>
