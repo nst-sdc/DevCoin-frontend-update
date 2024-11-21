@@ -26,6 +26,7 @@ Empowering collaboration, transparency, and innovation.
 | **HTML**           | Structure the user interface.               |
 | **CSS**            | Design and style the application.           |
 | **JavaScript**     | Implement interactivity and dynamic content. |
+| **React**          | Reactive frontend library                  |
 | **Node.js**        | Backend development and API integration.    |
 | **Tailwind CSS**   | Utility-first CSS framework.                 |
 | **TypeScript**     | Strongly typed superset of JavaScript.      |
@@ -46,7 +47,7 @@ Empowering collaboration, transparency, and innovation.
 
 1. Clone the repository:
    ```bash
-   https://github.com/NST-SDC/DevCoin.git
+   https://github.com/nst-sdc/DevCoin.git
    cd DevCoin
-
+   ```
 
