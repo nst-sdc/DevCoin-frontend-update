@@ -10,7 +10,7 @@ export default function HomePage() {
           Welcome to Dev Club
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Join our community of passionate developers, earn CRDits, and showcase your contributions.
+          Join our community of passionate developers, earn Dev Coins, and showcase your contributions.
         </p>
       </div>
 
@@ -18,8 +18,8 @@ export default function HomePage() {
         <FeatureCard
           to="/coins"
           icon={<Code2 className="h-8 w-8 text-indigo-600" />}
-          title="CRDits"
-          description="Track your contributions and earn rewards through our CRDit system."
+          title="Dev Coins"
+          description="Track your contributions and earn rewards through our Dev Coin system."
         />
         <FeatureCard
           to="/members"
@@ -31,7 +31,7 @@ export default function HomePage() {
           to="/leaderboard"
           icon={<Trophy className="h-8 w-8 text-indigo-600" />}
           title="Leaderboard"
-          description="Compete with others and climb the ranks in our CRDit leaderboard."
+          description="Compete with others and climb the ranks in our Dev Coin leaderboard."
         />
       </div>
     </div>

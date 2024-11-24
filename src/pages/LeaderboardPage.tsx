@@ -36,7 +36,7 @@ export default function LeaderboardPage() {
                   className="w-20 h-20 rounded-full mx-auto mb-4"
                 />
                 <h3 className="font-semibold text-lg mb-2">{member.name}</h3>
-                <p className="text-indigo-600 font-bold">{member.devCoins} CRDits</p>
+                <p className="text-indigo-600 font-bold">{member.devCoins} Dev Coins</p>
               </div>
             ))}
           </div>
@@ -55,7 +55,7 @@ export default function LeaderboardPage() {
                   Role
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CRDits
+                  Dev Coins
                 </th>
               </tr>
             </thead>
@@ -83,7 +83,7 @@ export default function LeaderboardPage() {
                     {member.role}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-indigo-600">
-                    {member.devCoins} CRDits
+                    {member.devCoins} Dev Coins
                   </td>
                 </tr>
               ))}

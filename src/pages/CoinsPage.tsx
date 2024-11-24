@@ -43,7 +43,7 @@ export default function CoinsPage() {
   return (
     <div className="py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">CRDits Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Dev Coins Dashboard</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
@@ -55,7 +55,7 @@ export default function CoinsPage() {
 
       {/* Policy Section */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">CRDits Policy</h2>
+        <h2 className="text-xl font-semibold mb-4">Dev Coins Policy</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-lg font-medium mb-3 flex items-center">
@@ -63,10 +63,10 @@ export default function CoinsPage() {
               Project Contributions
             </h3>
             <ul className="space-y-2 text-gray-600">
-              <li>• Pull Request (Merged): 50 CRDits</li>
-              <li>• Bug Fix: 30 CRDits</li>
-              <li>• Documentation: 20 CRDits</li>
-              <li>• Code Review: 15 CRDits</li>
+              <li>• Pull Request (Merged): 50 Dev Coins</li>
+              <li>• Bug Fix: 30 Dev Coins</li>
+              <li>• Documentation: 20 Dev Coins</li>
+              <li>• Code Review: 15 Dev Coins</li>
             </ul>
           </div>
           <div>
@@ -75,10 +75,10 @@ export default function CoinsPage() {
               Community Contributions
             </h3>
             <ul className="space-y-2 text-gray-600">
-              <li>• Workshop Hosting: 100 CRDits</li>
-              <li>• Event Organization: 80 CRDits</li>
-              <li>• Mentoring Sessions: 60 CRDits</li>
-              <li>• Technical Blog: 40 CRDits</li>
+              <li>• Workshop Hosting: 100 Dev Coins</li>
+              <li>• Event Organization: 80 Dev Coins</li>
+              <li>• Mentoring Sessions: 60 Dev Coins</li>
+              <li>• Technical Blog: 40 Dev Coins</li>
             </ul>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function CoinsPage() {
                     <p className="text-sm text-gray-500 mb-2">{project.description}</p>
                   </div>
                   <span className="bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                    {project.coins} CRDits
+                    {project.coins} Dev Coins
                   </span>
                 </div>
                 <a
@@ -175,7 +175,7 @@ export default function CoinsPage() {
                   <p className="text-sm text-gray-500">{member.role}</p>
                   <div className="mt-2 flex items-center space-x-4">
                     <span className="text-2xl font-bold text-indigo-600">
-                      {member.devCoins} CRDits
+                      {member.devCoins} Dev Coins
                     </span>
                     <a
                       href={`https://github.com/${member.github}`}
