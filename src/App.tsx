@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { DevCoinProvider } from './context/DevCoinContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import CoinsPage from './pages/CoinsPage';
 import MembersPage from './pages/MembersPage';
@@ -39,10 +39,9 @@ function App() {
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <>
-                      <Navbar />
+                    <Layout>
                       <HomePage />
-                    </>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
@@ -50,10 +49,9 @@ function App() {
                 path="/coins"
                 element={
                   <ProtectedRoute>
-                    <>
-                      <Navbar />
+                    <Layout>
                       <CoinsPage />
-                    </>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
@@ -61,10 +59,9 @@ function App() {
                 path="/members"
                 element={
                   <ProtectedRoute>
-                    <>
-                      <Navbar />
+                    <Layout>
                       <MembersPage />
-                    </>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
@@ -72,10 +69,9 @@ function App() {
                 path="/leaderboard"
                 element={
                   <ProtectedRoute>
-                    <>
-                      <Navbar />
+                    <Layout>
                       <LeaderboardPage />
-                    </>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
@@ -84,10 +80,9 @@ function App() {
                 path="/admin/dashboard"
                 element={
                   <ProtectedRoute requireAdmin>
-                    <>
-                      <Navbar />
+                    <Layout>
                       <AdminDashboard />
-                    </>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
