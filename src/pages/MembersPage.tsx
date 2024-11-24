@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import MemberCard from '../components/MemberCard';
 import MemberModal from '../components/MemberModal';
-import { mockMembers } from '../types';
+import { Member } from '../types';
+import { useDevCoin } from '../context/DevCoinContext';
 
 export default function MembersPage() {
+  const { members } = useDevCoin();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [filter, setFilter] = useState('all');
 
-  const filteredMembers = mockMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMembers = members.filter(member =>
+    member.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (filter === 'all' || member.role.toLowerCase().includes(filter.toLowerCase()))
   );
 
   return (
