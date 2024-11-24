@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Plus, Search, Github, ExternalLink, FileCode, Users } from 'lucide-react';
-import { Member, mockMembers } from '../types';
+import { Member } from '../types';
 import ContributionModal from '../components/ContributionModal';
 import MemberContributions from '../components/MemberContributions';
+import { useDevCoin } from '../context/DevCoinContext';
 
 const PROJECTS = [
   {
@@ -29,12 +30,13 @@ const PROJECTS = [
 ];
 
 export default function CoinsPage() {
+  const { members } = useDevCoin();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showOtherForm, setShowOtherForm] = useState(false);
 
-  const filteredMembers = mockMembers.filter(member =>
+  const filteredMembers = members.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -207,7 +209,7 @@ export default function CoinsPage() {
       <ContributionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        members={mockMembers}
+        members={members}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { Member } from '../types';
+import { useDevCoin } from '../context/DevCoinContext';
 
 interface ContributionModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface ContributionModalProps {
 }
 
 export default function ContributionModal({ isOpen, onClose, members }: ContributionModalProps) {
+  const { addContribution } = useDevCoin();
   const [selectedMember, setSelectedMember] = useState('');
   const [type, setType] = useState<'PR' | 'COLLAB' | 'EVENT' | 'OTHER'>('PR');
   const [description, setDescription] = useState('');
@@ -18,8 +20,22 @@ export default function ContributionModal({ isOpen, onClose, members }: Contribu
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle contribution submission
-    onClose();
+    
+    if (selectedMember && description && coins > 0) {
+      addContribution(selectedMember, {
+        type,
+        description,
+        coins,
+      });
+      
+      // Reset form
+      setSelectedMember('');
+      setType('PR');
+      setDescription('');
+      setCoins(0);
+      
+      onClose();
+    }
   };
 
   return (
