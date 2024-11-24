@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (userData: Omit<AuthUser, 'id'>) => Promise<void>;
   logout: () => void;
+  updateUserProfile: (updates: Partial<AuthUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -83,12 +84,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('currentUser');
   };
 
+  const updateUserProfile = async (updates: Partial<AuthUser>) => {
+    if (!currentUser) throw new Error('No user logged in');
+
+    try {
+      // Update in localStorage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userIndex = users.findIndex((u: AuthUser) => u.id === currentUser.id);
+      
+      if (userIndex === -1) throw new Error('User not found');
+
+      const updatedUser = { ...users[userIndex], ...updates };
+      users[userIndex] = updatedUser;
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // Update current user
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      setCurrentUser(userWithoutPassword);
+      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Failed to update profile');
+    }
+  };
+
   const value = {
     currentUser,
     isAdmin,
     login,
     signup,
-    logout
+    logout,
+    updateUserProfile
   };
 
   return (

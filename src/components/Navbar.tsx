@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Code2, Users, Trophy, Home } from 'lucide-react';
+import ProfileMenu from './ProfileMenu'; // Assuming ProfileMenu is in the same directory
 
 export default function Navbar() {
   const { currentUser, isAdmin, logout } = useAuth();
@@ -48,9 +49,16 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-indigo-600">DevCoin</span>
-                <span className="text-sm text-gray-500 border-l border-gray-300 pl-2">DevClub Portal</span>
+              <Link to="/" className="flex items-center space-x-3">
+                <img
+                  src="/logo.svg"
+                  alt="DevClub Logo"
+                  className="h-8 w-auto"
+                />
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold text-indigo-600">DevCoin</span>
+                  <span className="text-xs text-gray-500">DevClub Portal</span>
+                </div>
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
@@ -93,15 +101,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">
-              {currentUser.name}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-            >
-              Sign out
-            </button>
+            <ProfileMenu />
           </div>
         </div>
       </div>
