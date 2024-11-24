@@ -33,7 +33,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
               <div className="bg-indigo-50 p-4 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <Award className="h-5 w-5 text-indigo-600" />
-                  <span className="text-indigo-600 font-semibold">Dev Coins</span>
+                  <span className="text-indigo-600 font-semibold">CRDits</span>
                 </div>
                 <div className="text-2xl font-bold mt-1">{member.devCoins}</div>
               </div>

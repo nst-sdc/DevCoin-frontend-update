@@ -43,7 +43,7 @@ export default function CoinsPage() {
   return (
     <div className="py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dev Coins Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900">CRDits Dashboard</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
@@ -55,7 +55,7 @@ export default function CoinsPage() {
 
       {/* Policy Section */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Dev Coins Policy</h2>
+        <h2 className="text-xl font-semibold mb-4">CRDits Policy</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-lg font-medium mb-3 flex items-center">

@@ -101,7 +101,7 @@ export default function ContributionModal({ isOpen, onClose, members }: Contribu
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dev Coins
+                CRDits
               </label>
               <input
                 type="number"
