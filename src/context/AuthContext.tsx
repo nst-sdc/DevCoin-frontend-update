@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AuthUser, Member } from '../types';
-import { useDevCoin } from './DevCoinContext';
+import { AuthUser } from '../types';
 
 interface AuthContextType {
   currentUser: AuthUser | null;
@@ -14,73 +13,68 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const { addMember } = useDevCoin();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Load user from localStorage on mount
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setCurrentUser(user);
-      setIsAdmin(user.isAdmin || false);
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+        setIsAdmin(user.isAdmin || false);
+      } catch (error) {
+        console.error('Error parsing saved user:', error);
+        localStorage.removeItem('currentUser');
+      }
     }
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find((u: AuthUser) => u.email === email);
+    try {
+      // For demo purposes, using localStorage to simulate a backend
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: AuthUser) => u.email === email);
+      
+      if (!user || user.password !== password) {
+        throw new Error('Invalid email or password');
+      }
 
-    if (!user || user.password !== password) { // In real app, use proper password hashing
-      throw new Error('Invalid email or password');
+      const { password: _, ...userWithoutPassword } = user;
+      setCurrentUser(userWithoutPassword);
+      setIsAdmin(user.isAdmin || false);
+      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Failed to login');
     }
-
-    setCurrentUser(user);
-    setIsAdmin(user.isAdmin || false);
-    localStorage.setItem('currentUser', JSON.stringify(user));
   };
 
   const signup = async (userData: Omit<AuthUser, 'id'>) => {
-    // Get existing users
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    // Check if email already exists
-    if (users.some((u: AuthUser) => u.email === userData.email)) {
-      throw new Error('Email already exists');
+    try {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      // Check if user already exists
+      if (users.some((u: AuthUser) => u.email === userData.email)) {
+        throw new Error('User already exists');
+      }
+
+      const newUser = {
+        ...userData,
+        id: Date.now().toString(),
+        isAdmin: false
+      };
+
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // Auto login after signup
+      const { password: _, ...userWithoutPassword } = newUser;
+      setCurrentUser(userWithoutPassword);
+      setIsAdmin(false);
+      localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Failed to sign up');
     }
-
-    // Create new user
-    const newUser: AuthUser = {
-      ...userData,
-      id: `user-${Date.now()}`,
-      isAdmin: false,
-    };
-
-    // Add to users list
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    // Create member profile
-    const newMember: Member = {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      github: newUser.github,
-      linkedinId: newUser.linkedinId,
-      role: newUser.role,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${newUser.name}`,
-      devCoins: 0,
-      contributions: [],
-    };
-
-    // Add member to DevCoin context
-    addMember(newMember);
-
-    // Auto-login after signup
-    setCurrentUser(newUser);
-    setIsAdmin(false);
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
   };
 
   const logout = () => {
@@ -89,8 +83,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('currentUser');
   };
 
+  const value = {
+    currentUser,
+    isAdmin,
+    login,
+    signup,
+    logout
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, isAdmin, login, signup, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

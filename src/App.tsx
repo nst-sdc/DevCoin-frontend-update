@@ -16,11 +16,11 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
   const { currentUser, isAdmin } = useAuth();
 
   if (!currentUser) {
-    return <Navigate to="/signin" />;
+    return <Navigate to="/signin" replace />;
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -28,11 +28,10 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <DevCoinProvider>
+    <AuthProvider>
+      <DevCoinProvider>
+        <Router>
           <div className="min-h-screen bg-gray-50">
-            <Navbar />
             <Routes>
               <Route path="/signin" element={<SignInPage />} />
               <Route path="/signup" element={<SignUpPage />} />
@@ -40,7 +39,10 @@ function App() {
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <HomePage />
+                    <>
+                      <Navbar />
+                      <HomePage />
+                    </>
                   </ProtectedRoute>
                 }
               />
@@ -48,7 +50,10 @@ function App() {
                 path="/coins"
                 element={
                   <ProtectedRoute>
-                    <CoinsPage />
+                    <>
+                      <Navbar />
+                      <CoinsPage />
+                    </>
                   </ProtectedRoute>
                 }
               />
@@ -56,7 +61,10 @@ function App() {
                 path="/members"
                 element={
                   <ProtectedRoute>
-                    <MembersPage />
+                    <>
+                      <Navbar />
+                      <MembersPage />
+                    </>
                   </ProtectedRoute>
                 }
               />
@@ -64,31 +72,31 @@ function App() {
                 path="/leaderboard"
                 element={
                   <ProtectedRoute>
-                    <LeaderboardPage />
+                    <>
+                      <Navbar />
+                      <LeaderboardPage />
+                    </>
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/admin/login"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminLogin />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route
                 path="/admin/dashboard"
                 element={
                   <ProtectedRoute requireAdmin>
-                    <AdminDashboard />
+                    <>
+                      <Navbar />
+                      <AdminDashboard />
+                    </>
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
-        </DevCoinProvider>
-      </AuthProvider>
-    </Router>
+        </Router>
+      </DevCoinProvider>
+    </AuthProvider>
   );
 }
 
