@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAuth } from '../services/adminAuth';
+import { adminAuth } from '../../services/adminAuth';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -58,6 +58,7 @@ const AdminLogin: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Vivek@2024"
               required
             />
           </div>

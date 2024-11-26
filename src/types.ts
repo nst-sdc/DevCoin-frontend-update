@@ -13,13 +13,28 @@ export interface Member {
 
 export interface Contribution {
   id: string;
-  memberId: string;
-  type: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  title: string;
   description: string;
-  coins: number;
-  date: string;
-  approved: boolean;
+  contributionType: ContributionType;
+  devCoins: number;
+  status: DevCoinRequestStatus;
+  createdAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  comments?: string;
 }
+
+export type ContributionType = 
+  | 'CODE_REVIEW' 
+  | 'BUG_FIX' 
+  | 'FEATURE' 
+  | 'DOCUMENTATION' 
+  | 'TESTING' 
+  | 'MENTORING' 
+  | 'OTHER';
 
 export interface AuthUser {
   id: string;
@@ -42,6 +57,23 @@ export const CONTRIBUTION_TYPES = {
   MENTORING: { label: 'Mentoring Session', coins: 60 },
   BLOG: { label: 'Technical Blog', coins: 40 }
 };
+
+export type DevCoinRequestStatus = 'pending' | 'approved' | 'rejected';
+
+export interface DevCoinRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  amount: number;
+  reason: string;
+  description: string;
+  status: DevCoinRequestStatus;
+  createdAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  comments?: string;
+}
 
 export const mockMembers: Member[] = [
   // Frontend Developers

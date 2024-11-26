@@ -1,12 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Code2, Users, Trophy, Home } from 'lucide-react';
-import ProfileMenu from './ProfileMenu'; // Assuming ProfileMenu is in the same directory
+import { Code2, Users, Trophy, Home, Gift } from 'lucide-react';
 
-export default function Navbar() {
+interface NavItem {
+  name: string;
+  href: string;
+}
+
+interface NavbarProps {
+  navigation: NavItem[];
+}
+
+const iconMap = {
+  'Home': Home,
+  'My Coins': Code2,
+  'Members': Users,
+  'Leaderboard': Trophy,
+  'Contributions': Gift,
+};
+
+export default function Navbar({ navigation }: NavbarProps) {
   const { currentUser, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -15,10 +32,8 @@ export default function Navbar() {
       const currentScrollY = window.scrollY;
       
       if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        // Scrolling up or at top - show navbar
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling down and not at top - hide navbar
         setIsVisible(false);
       }
       
@@ -38,7 +53,7 @@ export default function Navbar() {
   };
 
   if (!currentUser) {
-    return null; // Don't show navbar on auth pages
+    return null;
   }
 
   return (
@@ -62,37 +77,26 @@ export default function Navbar() {
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
-              <Link
-                to="/"
-                className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 space-x-1"
-              >
-                <Home className="h-4 w-4" />
-                <span>Home</span>
-              </Link>
-              <Link
-                to="/coins"
-                className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 space-x-1"
-              >
-                <Code2 className="h-4 w-4" />
-                <span>Dev Coins</span>
-              </Link>
-              <Link
-                to="/members"
-                className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 space-x-1"
-              >
-                <Users className="h-4 w-4" />
-                <span>Members</span>
-              </Link>
-              <Link
-                to="/leaderboard"
-                className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 space-x-1"
-              >
-                <Trophy className="h-4 w-4" />
-                <span>Leaderboard</span>
-              </Link>
+              {navigation.map((item) => {
+                const Icon = iconMap[item.name as keyof typeof iconMap];
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`border-b-2 inline-flex items-center px-3 pt-1 text-sm font-medium transition-colors duration-200 space-x-1 ${
+                      location.pathname === item.href
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600'
+                    }`}
+                  >
+                    {Icon && <Icon className="h-4 w-4" />}
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
               {isAdmin && (
                 <Link
-                  to="/admin/dashboard"
+                  to="/admin"
                   className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200"
                 >
                   Admin
@@ -100,8 +104,16 @@ export default function Navbar() {
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <ProfileMenu />
+          <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-700">{currentUser.email}</span>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
