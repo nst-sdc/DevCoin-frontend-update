@@ -1,122 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Code2, Users, Trophy, Home, Gift } from 'lucide-react';
+import React from 'react';
+import { Code2, Users, Trophy, Home, LogIn, LogOut, UserPlus } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
-interface NavItem {
-  name: string;
-  href: string;
-}
-
-interface NavbarProps {
-  navigation: NavItem[];
-}
-
-const iconMap = {
-  'Home': Home,
-  'My Coins': Code2,
-  'Members': Users,
-  'Leaderboard': Trophy,
-  'Contributions': Gift,
-};
-
-export default function Navbar({ navigation }: NavbarProps) {
-  const { currentUser, isAdmin, logout } = useAuth();
-  const navigate = useNavigate();
+export default function Navbar() {
   const location = useLocation();
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  
+  const isActive = (path: string) => location.pathname === path;
 
-  useEffect(() => {
-    const controlNavbar = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      }
-      
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', controlNavbar);
-    
-    return () => {
-      window.removeEventListener('scroll', controlNavbar);
-    };
-  }, [lastScrollY]);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/signin');
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('Successfully signed out');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to sign out');
+    }
   };
-
-  if (!currentUser) {
-    return null;
-  }
-
+  
   return (
-    <nav className={`bg-white shadow-lg fixed w-full top-0 z-50 transition-transform duration-300 ${
-      isVisible ? 'translate-y-0' : '-translate-y-full'
-    }`}>
+    <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center space-x-3">
-                <img
-                  src="/logo.svg"
-                  alt="DevClub Logo"
-                  className="h-8 w-auto"
-                />
-                <div className="flex flex-col">
-                  <span className="text-xl font-bold text-indigo-600">DevCoin</span>
-                  <span className="text-xs text-gray-500">DevClub Portal</span>
-                </div>
-              </Link>
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="flex items-center space-x-2">
+            <Code2 className="h-8 w-8 text-indigo-600" />
+            <span className="font-bold text-xl">Dev Club</span>
+          </Link>
+          
+          <div className="flex items-center space-x-8">
+            <div className="flex space-x-4">
+              <NavLink to="/" icon={<Home />} text="Home" active={isActive('/')} />
+              <NavLink to="/coins" icon={<Code2 />} text="Dev Coins" active={isActive('/coins')} />
+              <NavLink to="/members" icon={<Users />} text="Members" active={isActive('/members')} />
+              <NavLink to="/leaderboard" icon={<Trophy />} text="Leaderboard" active={isActive('/leaderboard')} />
             </div>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
-              {navigation.map((item) => {
-                const Icon = iconMap[item.name as keyof typeof iconMap];
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`border-b-2 inline-flex items-center px-3 pt-1 text-sm font-medium transition-colors duration-200 space-x-1 ${
-                      location.pathname === item.href
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600'
-                    }`}
-                  >
-                    {Icon && <Icon className="h-4 w-4" />}
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="border-transparent text-gray-600 hover:border-indigo-500 hover:text-indigo-600 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-200"
-                >
-                  Admin
-                </Link>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center">
+
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">{currentUser.email}</span>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                Logout
-              </button>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  {user.role === 'admin' || user.role === 'super_admin' ? (
+                    <NavLink 
+                      to="/admin" 
+                      icon={<Code2 />} 
+                      text="Admin" 
+                      active={isActive('/admin')} 
+                    />
+                  ) : null}
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/signin"
+                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span>Sign In</span>
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>Sign Up</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
     </nav>
+  );
+}
+
+function NavLink({ to, icon, text, active }: { to: string; icon: React.ReactNode; text: string; active: boolean }) {
+  return (
+    <Link
+      to={to}
+      className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
+        ${active 
+          ? 'text-indigo-600 bg-indigo-50' 
+          : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+        }`}
+    >
+      {icon}
+      <span>{text}</span>
+    </Link>
   );
 }

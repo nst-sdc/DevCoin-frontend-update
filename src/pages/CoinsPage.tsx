@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, Search, Github, ExternalLink, FileCode, Users } from 'lucide-react';
-import { Member } from '../types';
+import { Member, mockMembers } from '../types';
 import ContributionModal from '../components/ContributionModal';
 import MemberContributions from '../components/MemberContributions';
-import { useDevCoin } from '../context/DevCoinContext';
 
 const PROJECTS = [
   {
@@ -30,13 +29,12 @@ const PROJECTS = [
 ];
 
 export default function CoinsPage() {
-  const { members } = useDevCoin();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showOtherForm, setShowOtherForm] = useState(false);
 
-  const filteredMembers = members.filter(member =>
+  const filteredMembers = mockMembers.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -63,10 +61,10 @@ export default function CoinsPage() {
               Project Contributions
             </h3>
             <ul className="space-y-2 text-gray-600">
-              <li>• Pull Request (Merged): 50 Dev Coins</li>
-              <li>• Bug Fix: 30 Dev Coins</li>
-              <li>• Documentation: 20 Dev Coins</li>
-              <li>• Code Review: 15 Dev Coins</li>
+              <li>• Pull Request (Merged): 50 DevCoins</li>
+              <li>• Bug Fix: 30 DevCoins</li>
+              <li>• Documentation: 20 DevCoins</li>
+              <li>• Code Review: 15 DevCoins</li>
             </ul>
           </div>
           <div>
@@ -75,10 +73,10 @@ export default function CoinsPage() {
               Community Contributions
             </h3>
             <ul className="space-y-2 text-gray-600">
-              <li>• Workshop Hosting: 100 Dev Coins</li>
-              <li>• Event Organization: 80 Dev Coins</li>
-              <li>• Mentoring Sessions: 60 Dev Coins</li>
-              <li>• Technical Blog: 40 Dev Coins</li>
+              <li>• Workshop Hosting: 100 DevCoins</li>
+              <li>• Event Organization: 80 DevCoins</li>
+              <li>• Mentoring Sessions: 60 DevCoins</li>
+              <li>• Technical Blog: 40 DevCoins</li>
             </ul>
           </div>
         </div>
@@ -98,7 +96,7 @@ export default function CoinsPage() {
                     <p className="text-sm text-gray-500 mb-2">{project.description}</p>
                   </div>
                   <span className="bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                    {project.coins} Dev Coins
+                    {project.coins} DevCoins
                   </span>
                 </div>
                 <a
@@ -175,7 +173,7 @@ export default function CoinsPage() {
                   <p className="text-sm text-gray-500">{member.role}</p>
                   <div className="mt-2 flex items-center space-x-4">
                     <span className="text-2xl font-bold text-indigo-600">
-                      {member.devCoins} Dev Coins
+                      {member.devCoins} DevCoins
                     </span>
                     <a
                       href={`https://github.com/${member.github}`}
@@ -209,7 +207,7 @@ export default function CoinsPage() {
       <ContributionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        members={members}
+        members={mockMembers}
       />
     </div>
   );

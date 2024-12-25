@@ -27,7 +27,6 @@ export default function MemberCard({ member, onClick }: MemberCardProps) {
           <div className="flex flex-col items-end">
             <div className="flex items-center space-x-1 text-indigo-600">
               <Award className="h-5 w-5" />
-              <span className="text-gray-500">Dev Coins:</span>{' '}
               <span className="font-semibold">{member.devCoins}</span>
             </div>
             <a
