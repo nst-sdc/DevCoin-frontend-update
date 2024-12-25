@@ -11,12 +11,137 @@ begin
 end;
 $$ language plpgsql;
 
--- Create profiles table
+-- Create users table
+create table public.users (
+    id uuid primary key default uuid_generate_v4(),
+    email text unique not null,
+    username text unique not null,
+    password_hash text not null,
+    name text not null,
+    role text not null,
+    avatar_url text,
+    github_username text unique,
+    github_id text unique,
+    devcoins integer default 0,
+    email_verified boolean default false,
+    adypu_email text unique,
+    linkedin_url text,
+    bio text,
+    is_active boolean default true,
+    last_login timestamp with time zone,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    constraint valid_email check (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    constraint valid_username check (username ~* '^[A-Za-z0-9_-]{3,30}$')
+);
+
+-- Create trigger for updated_at
+create trigger handle_updated_at
+    before update on public.users
+    for each row
+    execute function public.handle_updated_at();
+
+-- Create function to handle user registration
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+    insert into public.users (
+        id,
+        email,
+        username,
+        password_hash,
+        name,
+        role,
+        avatar_url,
+        github_username,
+        adypu_email,
+        linkedin_url
+    ) values (
+        new.id,
+        new.email,
+        new.raw_user_meta_data->>'username',
+        new.encrypted_password,
+        coalesce(new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'username'),
+        coalesce(new.raw_user_meta_data->>'role', 'member'),
+        new.raw_user_meta_data->>'avatar_url',
+        new.raw_user_meta_data->>'github_username',
+        new.raw_user_meta_data->>'adypu_email',
+        new.raw_user_meta_data->>'linkedin_url'
+    );
+    return new;
+end;
+$$ language plpgsql security definer;
+
+-- Create trigger for new user registration
+create trigger on_auth_user_created
+    after insert on auth.users
+    for each row execute function public.handle_new_user();
+
+-- Create function to update user login timestamp
+create or replace function public.handle_user_login()
+returns trigger as $$
+begin
+    update public.users
+    set last_login = now()
+    where id = new.id;
+    return new;
+end;
+$$ language plpgsql security definer;
+
+-- Create trigger for user login
+create trigger on_auth_user_login
+    after update of last_sign_in_at on auth.users
+    for each row execute function public.handle_user_login();
+
+-- Enable Row Level Security
+alter table public.users enable row level security;
+
+-- Create policies
+create policy "Users can view their own data"
+    on public.users for select
+    using (auth.uid() = id);
+
+create policy "Users can update their own data"
+    on public.users for update
+    using (auth.uid() = id)
+    with check (auth.uid() = id);
+
+create policy "Admins can view all users"
+    on public.users for select
+    using (
+        exists (
+            select 1
+            from public.admin_users
+            where user_id = auth.uid()
+        )
+    );
+
+create policy "Admins can update all users"
+    on public.users for update
+    using (
+        exists (
+            select 1
+            from public.admin_users
+            where user_id = auth.uid()
+        )
+    );
+
+-- Create index for faster queries
+create index users_username_idx on public.users (username);
+create index users_email_idx on public.users (email);
+create index users_github_username_idx on public.users (github_username);
+
+-- Create profiles table with additional fields from types.ts
 create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   username text unique,
-  github_username text unique,
+  name text not null,
+  role text not null,
   avatar_url text,
+  github_username text unique,
+  email text,
+  adypu_email text,
+  linkedin_url text,
   points integer default 0,
   contributions integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
@@ -37,14 +162,18 @@ create table public.projects (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Create contributions table
+-- Create contributions table with additional fields from types.ts
 create table public.contributions (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users not null,
-  project_id uuid references public.projects not null,
-  pull_request_url text not null,
+  project_id uuid references public.projects,
+  type text check (type in ('PR', 'COLLAB', 'EVENT', 'OTHER')) not null,
+  description text not null,
+  coins integer not null,
+  contribution_date timestamp with time zone not null,
+  verified boolean default false,
+  pull_request_url text,
   status text check (status in ('pending', 'approved', 'rejected')) default 'pending',
-  points_awarded integer default 0,
   reviewer_id uuid references auth.users,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -235,3 +364,25 @@ insert into public.settings (
   true, -- github token enabled
   false -- auto approve contributions
 );
+
+-- Insert initial members from types.ts
+insert into public.profiles (
+  id,
+  username,
+  name,
+  role,
+  avatar_url,
+  github_username,
+  email,
+  adypu_email,
+  linkedin_url,
+  points
+) values
+  (uuid_generate_v4(), 'siddharth-pareek', 'Siddharth Pareek', 'Frontend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'siddharth-pareek', null, null, null, 100),
+  (uuid_generate_v4(), 'nihalchollampat', 'NIHAL C', 'Frontend Developer', 'https://github.com/nst-sdc/Member/releases/download/m/nihal.jpg', 'NIhalChollampat', 'nihalchollampat@gmail.com', 'nihal.c@adypu.edu.in', 'https://www.linkedin.com/in/nihal-c-99704132b/', 100),
+  (uuid_generate_v4(), 'ayush-mandal', 'Ayush Kumar Mandal', 'Frontend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'ayush-mandal', null, null, null, 250),
+  (uuid_generate_v4(), 'neel3o115', 'Neel', 'Frontend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'neel3o115', 'neelarm.code@gmail.com', 'neel.verma@adypu.edu.in', 'https://linkedin.com/in/neel-verma-141844318/', 250),
+  (uuid_generate_v4(), 'nitya-jain', 'Nitya Jain', 'Frontend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'nitya-jain', null, null, null, 200),
+  (uuid_generate_v4(), 'aditya-prakash', 'Aditya Prakash', 'Frontend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'aditya-prakash', null, null, null, 100),
+  (uuid_generate_v4(), 'burra-karthikeya', 'Burra Karthikeya', 'Backend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'burra-karthikeya', null, null, null, 100),
+  (uuid_generate_v4(), 'gunavanth-reddy', 'Gunavanth Reddy', 'Backend Developer', 'https://github.com/nst-sdc/NIRMAN-submission/releases/download/v1/dorae.jpg', 'gunavanth-reddy', null, null, null, 100);
