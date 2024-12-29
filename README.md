@@ -49,5 +49,7 @@ Empowering collaboration, transparency, and innovation.
    ```bash
    https://github.com/nst-sdc/DevCoin.git
    cd DevCoin
+   npm install
+   npm run dev
    ```
 
