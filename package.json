@@ -18,10 +18,11 @@
     "date-fns": "^3.3.1",
     "dotenv": "^16.4.7",
     "firebase": "^10.14.1",
+    "framer-motion": "^11.15.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.3",
+    "react-router-dom": "^6.28.1",
     "react-toastify": "^10.0.4",
     "zod": "^3.22.4"
   },
